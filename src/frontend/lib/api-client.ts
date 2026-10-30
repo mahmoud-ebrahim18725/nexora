@@ -28,7 +28,6 @@ export async function request<T>(
     );
   }
   const data: ApiResponse<T> = await res.json();
-  console.log("response", data);
   return data.data;
 }
 

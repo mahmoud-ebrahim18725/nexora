@@ -22,6 +22,11 @@ export async function getCurrentUser() {
       role: true,
       companyId: true,
       createdBy: true,
+      company: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
 }

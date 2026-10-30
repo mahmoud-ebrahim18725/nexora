@@ -6,7 +6,7 @@ export type CurrentUser = {
     companyId: number;
 }
 
-export type SignInInput = {
+export type logInInput = {
     email: string;
     password: string;
 }

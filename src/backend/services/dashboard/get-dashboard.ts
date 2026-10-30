@@ -8,33 +8,31 @@ import {
   getProjectCountsByStatusForMember,
   countCompanyTasks,
   countMemberTasks,
-  getTasksByStatus,
-  getTasksByStatusForMember,
+  getTaskCountsByStatus,
+  getTaskCountsByStatusForMember,
   countOverdueCompanyTasks,
   countOverdueMemberTasks,
-  countMyTasks,
-  countCompanyMembers,
+  getRecentCompanyProjects,
+  getRecentMemberProjects,
 } from "@/backend/repositories/dashboard-repository";
 
 export async function getDashboard() {
   const user = await requireAuth();
-  if (user.role === ROLES.ADMIN || user.role === ROLES.OWNER) {
+  if (user.role === ROLES.OWNER) {
     const [
       projectsTotal,
       projectsByStatus,
       tasksTotal,
       tasksByStatus,
       overdue,
-      myTasks,
-      teamTotal,
+      recentProjects,
     ] = await Promise.all([
       countCompanyProjects(user.companyId),
       getProjectCountsByStatus(user.companyId),
       countCompanyTasks(user.companyId),
-      getTasksByStatus(user.companyId),
+      getTaskCountsByStatus(user.companyId),
       countOverdueCompanyTasks(user.companyId),
-      countMyTasks(user.id),
-      countCompanyMembers(user.companyId),
+      getRecentCompanyProjects(user.companyId),
     ]);
     const projectsStatus = projectsByStatus.reduce(
       (acc, item) => {
@@ -50,37 +48,39 @@ export async function getDashboard() {
       },
       {} as Record<string, number>,
     );
-    return {
-      projects: {
-        total: projectsTotal,
-        byStatus: projectsStatus,
-      },
-      tasks: {
-        total: tasksTotal,
-        byStatus: tasksStatus,
-        overdue,
-        myTasks,
-      },
-      team: {
-        total: teamTotal,
-      },
-    };
+return {
+  projects: {
+    total: projectsTotal,
+    byStatus: projectsStatus,
+    recent: recentProjects.map((project) => ({
+      id: project.id,
+      name: project.name,
+      status: project.status,
+      tasksCount: project._count.tasks,
+    })),
+  },
+  tasks: {
+    total: tasksTotal,
+    byStatus: tasksStatus,
+    overdue,
+  },
+};
   }
-  if (user.role === ROLES.MEMBER) {
+  if (user.role === ROLES.MEMBER || user.role === ROLES.ADMIN) {
     const [
       projectsTotal,
       projectsByStatus,
       tasksTotal,
       tasksByStatus,
       overdue,
-      myTasks,
+      recentProjects,
     ] = await Promise.all([
       countMemberProjects(user.id),
       getProjectCountsByStatusForMember(user.id),
       countMemberTasks(user.id),
-      getTasksByStatusForMember(user.id),
+      getTaskCountsByStatusForMember(user.id),
       countOverdueMemberTasks(user.id),
-      countMyTasks(user.id),
+      getRecentMemberProjects(user.id),
     ]);
     const projectsStatus = projectsByStatus.reduce(
       (acc, item) => {
@@ -100,12 +100,17 @@ export async function getDashboard() {
       projects: {
         total: projectsTotal,
         byStatus: projectsStatus,
+        recent: recentProjects.map((project) => ({
+          id: project.id,
+          name: project.name,
+          status: project.status,
+          projectRole: project.projectMembers[0].projectRole,
+        })),
       },
       tasks: {
         total: tasksTotal,
         byStatus: tasksStatus,
         overdue,
-        myTasks,
       },
     };
   }

@@ -1,5 +1,7 @@
 import { prisma } from "@/backend/lib/prisma";
 import { TASK_STATUS } from "@/backend/constants";
+
+
 export function countCompanyProjects(companyId: number) {
   return prisma.project.count({
     where: {
@@ -44,6 +46,57 @@ export function getProjectCountsByStatusForMember(userId: number) {
   });
 }
 
+export function getRecentCompanyProjects(companyId: number) {
+  return prisma.project.findMany({
+    where: {
+      companyId,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 3,
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      _count: {
+        select: {
+          tasks: true,
+        },
+      },
+    },
+  });
+}
+
+export function getRecentMemberProjects(userId: number) {
+  return prisma.project.findMany({
+    where: {
+      projectMembers: {
+        some: {
+          userId,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+    take: 3,
+    select: {
+      id: true,
+      name: true,
+      status: true,
+      projectMembers: {
+        where: {
+          userId,
+        },
+        select: {
+          projectRole: true,
+        },
+      },
+    },
+  });
+}
+
 export function countCompanyTasks(companyId: number) {
   return prisma.task.count({
     where: {
@@ -68,7 +121,7 @@ export function countMemberTasks(userId: number) {
   });
 }
 
-export function getTasksByStatus(companyId: number) {
+export function getTaskCountsByStatus(companyId: number) {
   return prisma.task.groupBy({
     by: ["status"],
     where: {
@@ -82,7 +135,7 @@ export function getTasksByStatus(companyId: number) {
   });
 }
 
-export function getTasksByStatusForMember(userId: number) {
+export function getTaskCountsByStatusForMember(userId: number) {
   return prisma.task.groupBy({
     by: ["status"],
     where: {
@@ -136,18 +189,3 @@ export function countOverdueMemberTasks(userId: number) {
   });
 }
 
-export function countMyTasks(userId: number) {
-  return prisma.task.count({
-    where: {
-      assignedTo: userId,
-    },
-  });
-}
-
-export function countCompanyMembers(companyId: number) {
-  return prisma.user.count({
-    where: {
-      companyId,
-    },
-  });
-}

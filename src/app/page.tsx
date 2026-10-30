@@ -1,6 +1,6 @@
 import { getCurrentUser } from "@/backend/auth";
 import AuthEntry from "@/frontend/components/auth/auth-entry";
-
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const user = await getCurrentUser();
@@ -9,9 +9,5 @@ export default async function Home() {
     return <AuthEntry />;
   }
 
-  return (
-    <div>
-      <h1>Welcome {user.name}</h1>
-    </div>
-  );
+  return redirect("/dashboard");
 }
