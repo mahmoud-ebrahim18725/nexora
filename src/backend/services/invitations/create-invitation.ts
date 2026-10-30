@@ -22,6 +22,9 @@ export async function createInvitation(input: CreateInvitationInput) {
       email: input.email,
       companyId: currentUser.companyId,
       status: "PENDING",
+      expiresAt: {
+        gt: new Date(),
+      },
     },
   });
   if (pendingInvitation) {

@@ -5,7 +5,7 @@ import { AppError } from "@/backend/errors/app-error";
 
 export async function listProjects() {
   const user = await requireAuth();
-  if (user.role === ROLES.ADMIN || user.role === ROLES.OWNER) {
+  if (user.role === ROLES.OWNER) {
     return prisma.project.findMany({
       where: {
         companyId: user.companyId,
@@ -17,7 +17,7 @@ export async function listProjects() {
       },
     });
   }
-  if (user.role === ROLES.MEMBER) {
+  if (user.role === ROLES.MEMBER || user.role === ROLES.ADMIN) {
     return prisma.project.findMany({
       where: {
         projectMembers: {
