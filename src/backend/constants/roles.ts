@@ -15,7 +15,7 @@ export const INVITABLE_ROLES = {
     MEMBER: ROLES.MEMBER,
 }as const;
 
-export type InvitsbleRole = (typeof INVITABLE_ROLES)[keyof typeof INVITABLE_ROLES];
+export type InvitableRole = (typeof INVITABLE_ROLES)[keyof typeof INVITABLE_ROLES];
 
 export const CHANGEABLE_ROLES = {
   ADMIN: ROLES.ADMIN,

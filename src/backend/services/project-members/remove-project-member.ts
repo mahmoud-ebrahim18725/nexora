@@ -9,6 +9,28 @@ import {
   findProjectManager,
 } from "@/backend/repositories";
 
+function deleteMembership(userId: number, projectId: number) {
+  return prisma.$transaction([
+    prisma.task.updateMany({
+      where: {
+        projectId: projectId,
+        assignedTo: userId,
+      },
+      data: {
+        assignedTo: null,
+      },
+    }),
+    prisma.projectMember.delete({
+      where: {
+        userId_projectId: {
+          userId: userId,
+          projectId: projectId,
+        },
+      },
+    }),
+  ]);
+}
+
 export async function removeProjectMember(userId: number, projectId: number) {
   const currentUser = await requireAuth();
   const project = await findProjectById(projectId, currentUser.companyId);
@@ -30,14 +52,7 @@ export async function removeProjectMember(userId: number, projectId: number) {
         );
       }
     }
-    await prisma.projectMember.delete({
-      where: {
-        userId_projectId: {
-          userId: userId,
-          projectId: projectId,
-        },
-      },
-    });
+    await deleteMembership(userId, projectId);
     return "Member removed successfully";
   }
   const isProjectManager = await findProjectManager(currentUser.id, projectId);
@@ -45,14 +60,7 @@ export async function removeProjectMember(userId: number, projectId: number) {
     if (member.projectRole === PROJECT_ROLES.MANAGER) {
       throw new AppError("Forbidden", 403, ERROR_CODES.FORBIDDEN);
     }
-    await prisma.projectMember.delete({
-      where: {
-        userId_projectId: {
-          userId: userId,
-          projectId: projectId,
-        },
-      },
-    });
+    await deleteMembership(userId, projectId);
     return "Member removed successfully";
   }
   throw new AppError("Forbidden", 403, ERROR_CODES.FORBIDDEN);

@@ -9,6 +9,7 @@ import {
   deleteProject,
 } from "@/backend/services/projects";
 import { successResponse } from "@/backend/lib/response";
+import { readJsonBody } from "@/backend/lib/request";
 import { handleError } from "@/backend/errors/error-handler";
 
 export async function GET(
@@ -19,7 +20,7 @@ export async function GET(
     const { id } = await params;
     const result = validate(projectIdSchema, { id });
     const project = await getProject(result.id);
-    return successResponse({ data: project });
+    return successResponse({ data: { project } });
   } catch (error) {
     return handleError(error);
   }
@@ -31,11 +32,10 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const { name, description, status } = await request.json();
     const idSchema = validate(projectIdSchema, { id });
-    const result = validate(updateProjectSchema, { name, description, status });
+    const result = validate(updateProjectSchema, await readJsonBody(request));
     const project = await updateProject(idSchema.id, result);
-    return successResponse({ data: project });
+    return successResponse({ data: { project } });
   } catch (error) {
     return handleError(error);
   }
@@ -48,8 +48,8 @@ export async function DELETE(
   try {
     const { id } = await params;
     const result = validate(projectIdSchema, { id });
-    const project = await deleteProject(result.id);
-    return successResponse({ data: project });
+    const message = await deleteProject(result.id);
+    return successResponse({ data: { message } });
   } catch (error) {
     return handleError(error);
   }

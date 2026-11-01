@@ -1,12 +1,23 @@
 import { prisma } from "@/backend/lib/prisma";
 import { AcceptInvitationInput } from "@/backend/validators";
 import { AppError } from "@/backend/errors/app-error";
-import { ERROR_CODES } from "@/backend/constants/error-codes";
+import {
+  ERROR_CODES,
+  INVITATION_STATUS,
+  RATE_LIMITS,
+} from "@/backend/constants";
+import { enforceRateLimit, getClientIp } from "@/backend/lib/rate-limit";
 import { verify } from "argon2";
 import { findUserByEmail } from "@/backend/repositories/user-repository";
 import { hashPassword, createSession, setSessionCookie } from "@/backend/auth";
 
 export async function acceptInvitation(input: AcceptInvitationInput) {
+  const ip = await getClientIp();
+  await enforceRateLimit(`invitation:ip:${ip}`, RATE_LIMITS.ACCEPT_INVITATION_IP);
+  await enforceRateLimit(
+    `invitation:id:${input.id}`,
+    RATE_LIMITS.ACCEPT_INVITATION_ID,
+  );
   const invitation = await prisma.invitation.findUnique({
     where: {
       id: input.id,
@@ -22,7 +33,7 @@ export async function acceptInvitation(input: AcceptInvitationInput) {
   if (invitation.expiresAt < new Date()) {
     throw new AppError("Invitation has expired", 409, ERROR_CODES.CONFLICT);
   }
-  if (invitation.status !== "PENDING") {
+  if (invitation.status !== INVITATION_STATUS.PENDING) {
     throw new AppError(
       "Invitation is no longer valid",
       409,
@@ -51,7 +62,7 @@ export async function acceptInvitation(input: AcceptInvitationInput) {
         id: invitation.id,
       },
       data: {
-        status: "ACCEPTED",
+        status: INVITATION_STATUS.ACCEPTED,
       },
     });
     return {

@@ -1,10 +1,12 @@
 import {
   validate,
+  getPagination,
   createTaskSchema,
   projectIdSchema,
 } from "@/backend/validators";
 import { createTask, listTasks } from "@/backend/services/tasks";
 import { successResponse } from "@/backend/lib/response";
+import { readJsonBody } from "@/backend/lib/request";
 import { handleError } from "@/backend/errors/error-handler";
 
 export async function POST(
@@ -13,7 +15,7 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const body = await request.json();
+    const body = await readJsonBody(request);
     const result = validate(createTaskSchema, { projectId: id, ...body });
     const task = await createTask(result);
     return successResponse({
@@ -32,8 +34,8 @@ export async function GET(
   try {
     const { id } = await params;
     const result = validate(projectIdSchema, { id });
-    const tasks = await listTasks(result.id);
-    return successResponse({ data: { tasks } });
+    const data = await listTasks(result.id, getPagination(request));
+    return successResponse({ data });
   } catch (error) {
     return handleError(error);
   }

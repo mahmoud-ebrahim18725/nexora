@@ -1,5 +1,6 @@
 import { prisma } from "@/backend/lib/prisma";
 import { TASK_STATUS } from "@/backend/constants";
+import { startOfToday } from "@/backend/lib/date";
 
 
 export function countCompanyProjects(companyId: number) {
@@ -160,7 +161,7 @@ export function countOverdueCompanyTasks(companyId: number) {
         companyId,
       },
       dueDate: {
-        lt: new Date(),
+        lt: startOfToday(),
       },
       status: {
         not: TASK_STATUS.COMPLETED,
@@ -180,7 +181,7 @@ export function countOverdueMemberTasks(userId: number) {
         },
       },
       dueDate: {
-        lt: new Date(),
+        lt: startOfToday(),
       },
       status: {
         not: TASK_STATUS.COMPLETED,

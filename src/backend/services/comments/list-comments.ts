@@ -7,8 +7,14 @@ import {
   findProjectById,
   findProjectMember,
 } from "@/backend/repositories";
+import { paginationArgs } from "@/backend/lib/pagination";
+import type { PaginationInput } from "@/backend/validators";
 
-export async function listComments(taskId: number, projectId: number) {
+export async function listComments(
+  taskId: number,
+  projectId: number,
+  pagination: PaginationInput,
+) {
   const currentUser = await requireAuth();
   const project = await findProjectById(projectId, currentUser.companyId);
   if (!project) {
@@ -26,20 +32,31 @@ export async function listComments(taskId: number, projectId: number) {
       ERROR_CODES.FORBIDDEN,
     );
   }
-  return prisma.comment.findMany({
-    where: {
-      taskId: taskId,
-    },
-    select: {
-      id: true,
-      content: true,
-      createdAt: true,
-      user: {
-        select: {
-          id: true,
-          name: true,
+  const where = {
+    taskId: taskId,
+  };
+  const [comments, total] = await Promise.all([
+    prisma.comment.findMany({
+      where,
+      orderBy: {
+        id: "asc",
+      },
+      ...paginationArgs(pagination),
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.comment.count({
+      where,
+    }),
+  ]);
+  return { comments, pagination: { ...pagination, total } };
 }

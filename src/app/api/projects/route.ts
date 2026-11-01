@@ -1,11 +1,16 @@
-import { validate, createProjectSchema } from "@/backend/validators";
+import {
+  validate,
+  getPagination,
+  createProjectSchema,
+} from "@/backend/validators";
 import { createProject, listProjects } from "@/backend/services/projects";
 import { successResponse } from "@/backend/lib/response";
+import { readJsonBody } from "@/backend/lib/request";
 import { handleError } from "@/backend/errors/error-handler";
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const body = await readJsonBody(request);
     const result = validate(createProjectSchema, body);
     const { project, managerMembership } = await createProject(result);
     return successResponse({
@@ -17,10 +22,10 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const projects = await listProjects();
-    return successResponse({ data: { projects } });
+    const data = await listProjects(getPagination(request));
+    return successResponse({ data });
   } catch (error) {
     return handleError(error);
   }

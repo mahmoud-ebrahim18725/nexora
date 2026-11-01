@@ -5,6 +5,7 @@ import {
 } from "@/backend/validators";
 import { updateComment, deleteComment } from "@/backend/services/comments";
 import { successResponse } from "@/backend/lib/response";
+import { readJsonBody } from "@/backend/lib/request";
 import { handleError } from "@/backend/errors/error-handler";
 
 export async function PATCH(
@@ -15,7 +16,7 @@ export async function PATCH(
 ) {
   try {
     const { id, taskId, commentId } = await params;
-    const body = await request.json();
+    const body = await readJsonBody(request);
     const idSchema = validate(commentIdSchema, {
       projectId: id,
       taskId: taskId,
@@ -47,12 +48,12 @@ export async function DELETE(
       taskId: taskId,
       commentId: commentId,
     });
-    const deletedComment = await deleteComment(
+    const message = await deleteComment(
       idSchema.projectId,
       idSchema.taskId,
       idSchema.commentId,
     );
-    return successResponse({ data: deletedComment });
+    return successResponse({ data: { message } });
   } catch (error) {
     return handleError(error);
   }

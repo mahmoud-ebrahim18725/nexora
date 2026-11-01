@@ -1,6 +1,7 @@
 import { prisma } from "@/backend/lib/prisma";
 import { requireAuth } from "@/backend/auth/require-auth";
 import { AppError } from "@/backend/errors/app-error";
+import { startOfToday } from "@/backend/lib/date";
 import {
   ERROR_CODES,
   ROLES,
@@ -59,7 +60,7 @@ export async function createTask(input: {
     }
   }
   if (input.dueDate) {
-    if (input.dueDate < new Date()) {
+    if (input.dueDate < startOfToday()) {
       throw new AppError(
         "Due date cannot be in the past",
         400,

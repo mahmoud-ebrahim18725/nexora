@@ -1,6 +1,7 @@
 import { validate, changeMemberRoleSchema } from "@/backend/validators";
 import { changeMemberRole } from "@/backend/services/team/change-member-role";
 import { successResponse } from "@/backend/lib/response";
+import { readJsonBody } from "@/backend/lib/request";
 import { handleError } from "@/backend/errors/error-handler";
 
 export async function PATCH(
@@ -9,7 +10,7 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const { role } = await request.json();
+    const { role } = await readJsonBody(request);
     const result = validate(changeMemberRoleSchema, { memberId: id, role });
     const member = await changeMemberRole(result.memberId, result.role);
     return successResponse({ data: { member } });

@@ -8,7 +8,7 @@ export async function updateProject(
   id: number,
   data: {
     name?: string;
-    description?: string;
+    description?: string | null;
     status?: ProjectStatus;
   },
 ) {

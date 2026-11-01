@@ -1,6 +1,7 @@
 import { prisma } from "@/backend/lib/prisma";
 import { requireAuth } from "@/backend/auth";
 import { AppError } from "@/backend/errors/app-error";
+import { startOfToday } from "@/backend/lib/date";
 import {
   ERROR_CODES,
   ROLES,
@@ -19,10 +20,10 @@ export async function updateTask(
   taskId: number,
   data: {
     title?: string;
-    description?: string;
+    description?: string | null;
     priority?: TaskPriority;
-    assignedTo?: number;
-    dueDate?: Date;
+    assignedTo?: number | null;
+    dueDate?: Date | null;
     status?: TaskStatus;
   },
 ) {
@@ -40,73 +41,43 @@ export async function updateTask(
   }
 
   const isManager = await findProjectManager(currentUser.id, projectId);
-  if (
-    currentUser.role !== ROLES.OWNER &&
-    !isManager &&
-    task.assignedTo !== currentUser.id
-  ) {
-    throw new AppError(
-      "You can't update this task",
-      403,
-      ERROR_CODES.FORBIDDEN,
-    );
-  }
-  if (currentUser.role === ROLES.OWNER || isManager) {
-    if (data.assignedTo !== undefined) {
-      const projectMember = await findProjectMember(data.assignedTo, projectId);
-
-      if (!projectMember) {
-        throw new AppError("User not found", 404, ERROR_CODES.NOT_FOUND);
-      }
-    }
-    if (data.dueDate !== undefined) {
-      if (data.dueDate < new Date()) {
-        throw new AppError(
-          "Due date should be greater than today",
-          400,
-          ERROR_CODES.BAD_REQUEST,
-        );
-      }
-    }
-    const updatedTask = await prisma.task.update({
-      where: {
-        id: taskId,
-      },
-      data,
-    });
-    return {
-      id: updatedTask.id,
-      title: updatedTask.title,
-      description: updatedTask.description,
-      priority: updatedTask.priority,
-      assignedTo: updatedTask.assignedTo,
-      dueDate: updatedTask.dueDate,
-      status: updatedTask.status,
-    };
-  }
-  if (task.assignedTo === currentUser.id) {
-    const fields = Object.keys(data);
-    if (fields.some((field) => field !== "status")) {
+  if (currentUser.role !== ROLES.OWNER && !isManager) {
+    const isMember = await findProjectMember(currentUser.id, projectId);
+    const onlyStatus = Object.keys(data).every((field) => field === "status");
+    if (!isMember || task.assignedTo !== currentUser.id || !onlyStatus) {
       throw new AppError(
         "You can't update this task",
         403,
         ERROR_CODES.FORBIDDEN,
       );
     }
-    const updatedTask = await prisma.task.update({
-      where: {
-        id: taskId,
-      },
-      data,
-    });
-    return {
-      id: updatedTask.id,
-      title: updatedTask.title,
-      description: updatedTask.description,
-      priority: updatedTask.priority,
-      assignedTo: updatedTask.assignedTo,
-      dueDate: updatedTask.dueDate,
-      status: updatedTask.status,
-    };
   }
+  if (data.assignedTo) {
+    const projectMember = await findProjectMember(data.assignedTo, projectId);
+    if (!projectMember) {
+      throw new AppError("User not found", 404, ERROR_CODES.NOT_FOUND);
+    }
+  }
+  if (data.dueDate && data.dueDate < startOfToday()) {
+    throw new AppError(
+      "Due date cannot be in the past",
+      400,
+      ERROR_CODES.BAD_REQUEST,
+    );
+  }
+  const updatedTask = await prisma.task.update({
+    where: {
+      id: taskId,
+    },
+    data,
+  });
+  return {
+    id: updatedTask.id,
+    title: updatedTask.title,
+    description: updatedTask.description,
+    priority: updatedTask.priority,
+    assignedTo: updatedTask.assignedTo,
+    dueDate: updatedTask.dueDate,
+    status: updatedTask.status,
+  };
 }

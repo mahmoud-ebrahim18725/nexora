@@ -28,6 +28,16 @@ export async function getSession(sessionId: string) {
   return session;
 }
 
+export async function deleteExpiredSessions() {
+  return prisma.session.deleteMany({
+    where: {
+      expiresAt: {
+        lt: new Date(),
+      },
+    },
+  });
+}
+
 export async function deleteSession(sessionId: string) {
   return prisma.session.deleteMany({
     where: {

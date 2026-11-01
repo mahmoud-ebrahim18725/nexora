@@ -2,7 +2,7 @@ import { prisma } from "@/backend/lib/prisma";
 import { requireRole } from "@/backend/auth";
 import { CreateInvitationInput } from "@/backend/validators";
 import { AppError } from "@/backend/errors/app-error";
-import { ERROR_CODES, ROLES } from "@/backend/constants";
+import { ERROR_CODES, INVITATION_STATUS, ROLES } from "@/backend/constants";
 import { findUserByEmail } from "@/backend/repositories/user-repository";
 import { randomBytes } from "crypto";
 import { hash } from "argon2";
@@ -21,7 +21,7 @@ export async function createInvitation(input: CreateInvitationInput) {
     where: {
       email: input.email,
       companyId: currentUser.companyId,
-      status: "PENDING",
+      status: INVITATION_STATUS.PENDING,
       expiresAt: {
         gt: new Date(),
       },
@@ -42,7 +42,7 @@ export async function createInvitation(input: CreateInvitationInput) {
       role: input.role,
       companyId: currentUser.companyId,
       createdBy: currentUser.id,
-      status: "PENDING",
+      status: INVITATION_STATUS.PENDING,
       tokenHash,
       expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
     },

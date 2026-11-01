@@ -1,5 +1,6 @@
 import {
   validate,
+  getPagination,
   addMemberSchema,
   projectIdSchema,
   changeProjectMemberRoleSchema,
@@ -12,6 +13,7 @@ import {
   removeProjectMember,
 } from "@/backend/services/project-members";
 import { successResponse } from "@/backend/lib/response";
+import { readJsonBody } from "@/backend/lib/request";
 import { handleError } from "@/backend/errors/error-handler";
 
 export async function POST(
@@ -20,12 +22,13 @@ export async function POST(
 ) {
   try {
     const { id } = await params;
-    const { userId, role } = await request.json();
+    const { userId, role } = await readJsonBody(request);
     const result = validate(addMemberSchema, { projectId: id, userId, role });
     const member = await addMember(result);
 
     return successResponse({
       data: { member },
+      statusCode: 201,
     });
   } catch (error) {
     return handleError(error);
@@ -39,8 +42,8 @@ export async function GET(
   try {
     const { id } = await params;
     const result = validate(projectIdSchema, { id });
-    const members = await listMembers(result.id);
-    return successResponse({ data: { members } });
+    const data = await listMembers(result.id, getPagination(request));
+    return successResponse({ data });
   } catch (error) {
     return handleError(error);
   }
@@ -52,7 +55,7 @@ export async function PATCH(
 ) {
   try {
     const { id } = await params;
-    const { userId, role } = await request.json();
+    const { userId, role } = await readJsonBody(request);
     const result = validate(changeProjectMemberRoleSchema, {
       projectId: id,
       userId,
@@ -75,13 +78,13 @@ export async function DELETE(
 ) {
   try {
     const { id } = await params;
-    const { userId } = await request.json();
+    const { userId } = await readJsonBody(request);
     const result = validate(removeMemberSchema, {
       projectId: id,
       userId: userId,
     });
-    const massage = await removeProjectMember(result.userId, result.projectId);
-    return successResponse({ data: { message: massage } });
+    const message = await removeProjectMember(result.userId, result.projectId);
+    return successResponse({ data: { message } });
   } catch (error) {
     return handleError(error);
   }

@@ -2,36 +2,46 @@ import { prisma } from "@/backend/lib/prisma";
 import { requireAuth } from "@/backend/auth/require-auth";
 import { ROLES, ERROR_CODES } from "@/backend/constants";
 import { AppError } from "@/backend/errors/app-error";
+import { paginationArgs } from "@/backend/lib/pagination";
+import type { PaginationInput } from "@/backend/validators";
 
-export async function listProjects() {
-  const user = await requireAuth();
+function visibleProjects(user: { id: number; role: string; companyId: number }) {
   if (user.role === ROLES.OWNER) {
-    return prisma.project.findMany({
-      where: {
-        companyId: user.companyId,
-      },
-      select: {
-        id: true,
-        name: true,
-        status: true,
-      },
-    });
+    return {
+      companyId: user.companyId,
+    };
   }
   if (user.role === ROLES.MEMBER || user.role === ROLES.ADMIN) {
-    return prisma.project.findMany({
-      where: {
-        projectMembers: {
-          some: {
-            userId: user.id,
-          },
+    return {
+      projectMembers: {
+        some: {
+          userId: user.id,
         },
       },
+    };
+  }
+  throw new AppError("Forbidden", 403, ERROR_CODES.FORBIDDEN);
+}
+
+export async function listProjects(pagination: PaginationInput) {
+  const user = await requireAuth();
+  const where = visibleProjects(user);
+  const [projects, total] = await Promise.all([
+    prisma.project.findMany({
+      where,
+      orderBy: {
+        id: "desc",
+      },
+      ...paginationArgs(pagination),
       select: {
         id: true,
         name: true,
         status: true,
       },
-    });
-  }
-  throw new AppError("Forbidden", 403, ERROR_CODES.FORBIDDEN);
+    }),
+    prisma.project.count({
+      where,
+    }),
+  ]);
+  return { projects, pagination: { ...pagination, total } };
 }

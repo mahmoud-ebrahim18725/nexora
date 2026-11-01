@@ -1,34 +1,40 @@
 import { z } from "zod";
 import { PROJECT_ROLES, PROJECT_STATUS } from "@/backend/constants";
+import {
+  MAX_NAME_LENGTH,
+  MAX_TEXT_LENGTH,
+  bodyId,
+  idParam,
+} from "./common";
 
 export const createProjectSchema = z.object({
-  name: z.string().trim().min(1),
-  description: z.string().trim().optional(),
+  name: z.string().trim().min(1).max(MAX_NAME_LENGTH),
+  description: z.string().trim().max(MAX_TEXT_LENGTH).optional(),
 });
 
 export const projectIdSchema = z.object({
-  id: z.coerce.number().int().positive(),
+  id: idParam,
 });
 
 export const addMemberSchema = z.object({
-  projectId: z.coerce.number().int().positive(),
-  userId: z.coerce.number().int().positive(),
+  projectId: idParam,
+  userId: bodyId,
   role: z.enum(Object.values(PROJECT_ROLES)).optional(),
 });
 
 export const changeProjectMemberRoleSchema = z.object({
-  projectId: z.coerce.number().int().positive(),
-  userId: z.coerce.number().int().positive(),
+  projectId: idParam,
+  userId: bodyId,
   role: z.enum(Object.values(PROJECT_ROLES)),
 });
 
 export const removeMemberSchema = z.object({
-  projectId: z.coerce.number().int().positive(),
-  userId: z.coerce.number().int().positive(),
+  projectId: idParam,
+  userId: bodyId,
 });
 
 export const updateProjectSchema = z.object({
-  name: z.string().trim().min(1).optional(),
-  description: z.string().trim().min(1).optional(),
+  name: z.string().trim().min(1).max(MAX_NAME_LENGTH).optional(),
+  description: z.string().trim().min(1).max(MAX_TEXT_LENGTH).nullable().optional(),
   status: z.enum(Object.values(PROJECT_STATUS)).optional(),
 });

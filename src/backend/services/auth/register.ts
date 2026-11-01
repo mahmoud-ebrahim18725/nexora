@@ -3,9 +3,12 @@ import { hashPassword, createSession, setSessionCookie } from "@/backend/auth";
 import { RegisterInput } from "@/backend/validators";
 import { findUserByEmail } from "@/backend/repositories/user-repository";
 import { AppError } from "@/backend/errors/app-error";
-import { ERROR_CODES, ROLES } from "@/backend/constants";
+import { enforceRateLimit, getClientIp } from "@/backend/lib/rate-limit";
+import { ERROR_CODES, RATE_LIMITS, ROLES } from "@/backend/constants";
 
 export async function register(input: RegisterInput) {
+  const ip = await getClientIp();
+  await enforceRateLimit(`register:ip:${ip}`, RATE_LIMITS.REGISTER_IP);
   const user = await findUserByEmail(input.email);
   if (user) {
     throw new AppError("Email already exists", 409, ERROR_CODES.CONFLICT);

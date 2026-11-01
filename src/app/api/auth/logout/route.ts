@@ -10,7 +10,7 @@ export async function POST() {
       await deleteSession(sessionId);
     }
     await clearSessionCookie();
-    return successResponse({ data: "Logged out successfully" });
+    return successResponse({ data: { message: "Logged out successfully" } });
   } catch (error) {
     return handleError(error);
   }

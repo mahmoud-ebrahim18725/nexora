@@ -16,6 +16,16 @@ import {
   getRecentMemberProjects,
 } from "@/backend/repositories/dashboard-repository";
 
+function toStatusCounts(items: { status: string; _count: { status: number } }[]) {
+  return items.reduce(
+    (acc, item) => {
+      acc[item.status] = item._count.status;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+}
+
 export async function getDashboard() {
   const user = await requireAuth();
   if (user.role === ROLES.OWNER) {
@@ -34,37 +44,23 @@ export async function getDashboard() {
       countOverdueCompanyTasks(user.companyId),
       getRecentCompanyProjects(user.companyId),
     ]);
-    const projectsStatus = projectsByStatus.reduce(
-      (acc, item) => {
-        acc[item.status] = item._count.status;
-        return acc;
+    return {
+      projects: {
+        total: projectsTotal,
+        byStatus: toStatusCounts(projectsByStatus),
+        recent: recentProjects.map((project) => ({
+          id: project.id,
+          name: project.name,
+          status: project.status,
+          tasksCount: project._count.tasks,
+        })),
       },
-      {} as Record<string, number>,
-    );
-    const tasksStatus = tasksByStatus.reduce(
-      (acc, item) => {
-        acc[item.status] = item._count.status;
-        return acc;
+      tasks: {
+        total: tasksTotal,
+        byStatus: toStatusCounts(tasksByStatus),
+        overdue,
       },
-      {} as Record<string, number>,
-    );
-return {
-  projects: {
-    total: projectsTotal,
-    byStatus: projectsStatus,
-    recent: recentProjects.map((project) => ({
-      id: project.id,
-      name: project.name,
-      status: project.status,
-      tasksCount: project._count.tasks,
-    })),
-  },
-  tasks: {
-    total: tasksTotal,
-    byStatus: tasksStatus,
-    overdue,
-  },
-};
+    };
   }
   if (user.role === ROLES.MEMBER || user.role === ROLES.ADMIN) {
     const [
@@ -82,24 +78,10 @@ return {
       countOverdueMemberTasks(user.id),
       getRecentMemberProjects(user.id),
     ]);
-    const projectsStatus = projectsByStatus.reduce(
-      (acc, item) => {
-        acc[item.status] = item._count.status;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
-    const tasksStatus = tasksByStatus.reduce(
-      (acc, item) => {
-        acc[item.status] = item._count.status;
-        return acc;
-      },
-      {} as Record<string, number>,
-    );
     return {
       projects: {
         total: projectsTotal,
-        byStatus: projectsStatus,
+        byStatus: toStatusCounts(projectsByStatus),
         recent: recentProjects.map((project) => ({
           id: project.id,
           name: project.name,
@@ -109,7 +91,7 @@ return {
       },
       tasks: {
         total: tasksTotal,
-        byStatus: tasksStatus,
+        byStatus: toStatusCounts(tasksByStatus),
         overdue,
       },
     };
