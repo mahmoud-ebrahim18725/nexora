@@ -1,7 +1,81 @@
 @import "tailwindcss";
 
+@theme {
+  --color-ink: #12151c;
+  --color-ink-soft: #232833;
+  --color-ink-line: #2a2f3a;
+  --color-on-ink: #aeb5c2;
+  --color-ground: #f5f6f8;
+  --color-column: #eceef2;
+  --color-line: #e3e6eb;
+  --color-line-strong: #c9ced6;
+  --color-muted: #5b6472;
+  --color-accent: #1873cc;
+  --color-accent-hover: #125fad;
+  --color-accent-soft: #e4edfc;
+  --color-accent-text: #1d4ab3;
+  --color-danger: #a5360c;
+  --color-danger-soft: #fdebe2;
+  --color-warning: #775000;
+  --color-warning-soft: #fbf1d9;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+}
+
 body {
   margin: 0;
-  background: #f8f9fc;
-  color: #111827;
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+button:not(:disabled),
+select {
+  cursor: pointer;
+}
+
+dialog::backdrop {
+  background: rgb(18 21 28 / 0.5);
+}
+
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .slide-in-left {
+    animation: slide-in-left 0.2s ease-out;
+  }
+
+  .slide-in-right {
+    animation: slide-in-right 0.2s ease-out;
+  }
+
+  .sheet-up {
+    animation: sheet-up 0.2s ease-out;
+  }
 }

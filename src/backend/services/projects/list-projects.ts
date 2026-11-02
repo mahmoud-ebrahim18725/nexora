@@ -1,6 +1,6 @@
 import { prisma } from "@/backend/lib/prisma";
 import { requireAuth } from "@/backend/auth/require-auth";
-import { ROLES, ERROR_CODES } from "@/backend/constants";
+import { ROLES, ERROR_CODES, ProjectStatus } from "@/backend/constants";
 import { AppError } from "@/backend/errors/app-error";
 import { paginationArgs } from "@/backend/lib/pagination";
 import type { PaginationInput } from "@/backend/validators";
@@ -23,9 +23,12 @@ function visibleProjects(user: { id: number; role: string; companyId: number }) 
   throw new AppError("Forbidden", 403, ERROR_CODES.FORBIDDEN);
 }
 
-export async function listProjects(pagination: PaginationInput) {
+export async function listProjects(
+  pagination: PaginationInput,
+  status?: ProjectStatus,
+) {
   const user = await requireAuth();
-  const where = visibleProjects(user);
+  const where = { ...visibleProjects(user), status };
   const [projects, total] = await Promise.all([
     prisma.project.findMany({
       where,
@@ -36,12 +39,29 @@ export async function listProjects(pagination: PaginationInput) {
       select: {
         id: true,
         name: true,
+        description: true,
         status: true,
+        _count: {
+          select: {
+            tasks: true,
+            projectMembers: true,
+          },
+        },
       },
     }),
     prisma.project.count({
       where,
     }),
   ]);
-  return { projects, pagination: { ...pagination, total } };
+  return {
+    projects: projects.map((project) => ({
+      id: project.id,
+      name: project.name,
+      description: project.description,
+      status: project.status,
+      tasksCount: project._count.tasks,
+      membersCount: project._count.projectMembers,
+    })),
+    pagination: { ...pagination, total },
+  };
 }

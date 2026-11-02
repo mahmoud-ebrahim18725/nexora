@@ -2,6 +2,7 @@ import {
   validate,
   getPagination,
   createProjectSchema,
+  projectFiltersSchema,
 } from "@/backend/validators";
 import { createProject, listProjects } from "@/backend/services/projects";
 import { successResponse } from "@/backend/lib/response";
@@ -24,7 +25,12 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   try {
-    const data = await listProjects(getPagination(request));
+    const params = new URL(request.url).searchParams;
+    const { status } = validate(
+      projectFiltersSchema,
+      Object.fromEntries(params),
+    );
+    const data = await listProjects(getPagination(request), status);
     return successResponse({ data });
   } catch (error) {
     return handleError(error);

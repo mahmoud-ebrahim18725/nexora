@@ -12,6 +12,10 @@ export const createProjectSchema = z.object({
   description: z.string().trim().max(MAX_TEXT_LENGTH).optional(),
 });
 
+export const projectFiltersSchema = z.object({
+  status: z.enum(Object.values(PROJECT_STATUS)).optional(),
+});
+
 export const projectIdSchema = z.object({
   id: idParam,
 });
