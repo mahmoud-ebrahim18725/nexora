@@ -2,17 +2,17 @@ import { Logo } from "../ui/icons";
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-wrap bg-white max-[839px]:content-start">
+    <div className="flex min-h-screen flex-col bg-white lg:flex-row">
       <section
         aria-label="About Nexora"
-        className="flex min-w-0 flex-[1_1_420px] flex-col gap-12 overflow-hidden bg-ink px-5 py-4 text-white md:p-16"
+        className="flex min-w-0 flex-col gap-12 overflow-hidden bg-ink px-5 py-4 text-white md:px-10 lg:flex-1 lg:p-16"
       >
         <div className="flex items-center gap-3">
           <Logo size={34} />
           <span className="text-xl font-bold">Nexora</span>
         </div>
-        <div className="flex flex-1 flex-col justify-center gap-10 pb-20 max-md:hidden">
-          <p className="max-w-[520px] text-[44px] leading-[1.12] font-bold tracking-tight">
+        <div className="hidden flex-1 flex-col justify-center gap-10 pb-20 lg:flex">
+          <p className="max-w-[520px] text-[clamp(32px,3.1vw,44px)] leading-[1.12] font-bold tracking-tight">
             Projects, tasks and your team in one workspace.
           </p>
           <div aria-hidden="true" className="grid w-full max-w-[520px] grid-cols-3 gap-3">
@@ -34,7 +34,7 @@ export function AuthLayout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </section>
-      <main className="flex min-w-0 flex-[1_1_420px] justify-center px-5 py-8 md:items-center md:p-16">
+      <main className="flex min-w-0 flex-1 justify-center px-5 py-8 md:items-center md:p-10 lg:p-16">
         <div className="flex w-full max-w-[400px] flex-col gap-6">{children}</div>
       </main>
     </div>

@@ -137,7 +137,7 @@ export function TeamView() {
                         {member.name}
                       </span>
                     </td>
-                    <td className="px-5 py-3 text-muted">{member.email}</td>
+                    <td className="px-5 py-3 text-muted [overflow-wrap:anywhere]">{member.email}</td>
                     <td className="px-5 py-3">{roleControl(member)}</td>
                     <td className="px-5 py-3 text-right">{removeButton(member)}</td>
                   </tr>

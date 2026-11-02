@@ -30,7 +30,7 @@ function TaskCard({
       }`}
     >
       <span className="leading-snug font-semibold break-words">{task.title}</span>
-      <span className="flex min-h-7 items-center gap-2">
+      <span className="flex min-h-7 flex-wrap items-center gap-2">
         <PriorityBadge priority={task.priority} />
         {task.dueDate && (
           <span className={`font-mono text-xs ${overdue ? "text-danger" : "text-muted"}`}>

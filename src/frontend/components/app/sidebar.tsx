@@ -151,7 +151,7 @@ export function Sidebar() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 flex items-center gap-1 bg-ink px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 md:hidden">
+      <header className="sticky top-0 z-20 flex items-center gap-1 bg-ink px-2 pt-[max(0.5rem,env(safe-area-inset-top))] pb-2 md:px-7 lg:hidden">
         <button
           type="button"
           aria-label="Open menu"
@@ -166,7 +166,7 @@ export function Sidebar() {
 
       <nav
         aria-label="Main"
-        className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-8 bg-ink p-4 py-6 text-on-ink md:flex"
+        className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col gap-8 bg-ink p-4 py-6 text-on-ink lg:flex"
       >
         <span className="px-2">
           <Brand />

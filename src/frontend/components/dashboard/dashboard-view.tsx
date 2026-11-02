@@ -67,7 +67,7 @@ export function DashboardView() {
         )}
       </PageHeader>
 
-      <section aria-label="Totals" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <section aria-label="Totals" className="grid grid-cols-2 gap-4 md:grid-cols-4">
         <Stat label="Projects" value={projects.total} />
         <Stat label="Tasks" value={tasks.total} />
         <Stat label="Completed tasks" value={tasks.byStatus.completed ?? 0} />
