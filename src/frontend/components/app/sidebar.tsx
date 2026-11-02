@@ -12,7 +12,6 @@ import {
   DashboardIcon,
   FolderIcon,
   LogoutIcon,
-  Logo,
   MenuIcon,
   TeamIcon,
 } from "../ui/icons";
@@ -91,8 +90,11 @@ function Brand() {
 
   return (
     <span className="flex min-w-0 items-center gap-3">
-      <span className="shrink-0">
-        <Logo />
+      <span
+        aria-hidden="true"
+        className="flex size-7.5 shrink-0 items-center justify-center rounded-lg bg-accent text-[15px] font-bold text-white"
+      >
+        {[...user.companyName][0]?.toUpperCase()}
       </span>
       <span className="truncate text-lg font-bold text-white">
         {user.companyName}
