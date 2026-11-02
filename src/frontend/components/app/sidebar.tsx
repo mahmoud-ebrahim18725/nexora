@@ -87,10 +87,16 @@ function UserCard() {
 }
 
 function Brand() {
+  const user = useCurrentUser();
+
   return (
-    <span className="flex items-center gap-3">
-      <Logo />
-      <span className="text-lg font-bold text-white">Nexora</span>
+    <span className="flex min-w-0 items-center gap-3">
+      <span className="shrink-0">
+        <Logo />
+      </span>
+      <span className="truncate text-lg font-bold text-white">
+        {user.companyName}
+      </span>
     </span>
   );
 }
@@ -126,7 +132,7 @@ function MobileMenu({ onClose }: { onClose: () => void }) {
             type="button"
             aria-label="Close menu"
             onClick={onClose}
-            className="flex size-11 items-center justify-center rounded-lg hover:bg-ink-soft hover:text-white"
+            className="flex size-11 shrink-0 items-center justify-center rounded-lg hover:bg-ink-soft hover:text-white"
           >
             <CloseIcon />
           </button>
@@ -149,7 +155,7 @@ export function Sidebar() {
           aria-label="Open menu"
           aria-expanded={open}
           onClick={() => setOpen(true)}
-          className="flex size-11 items-center justify-center rounded-lg text-white hover:bg-ink-soft"
+          className="flex size-11 shrink-0 items-center justify-center rounded-lg text-white hover:bg-ink-soft"
         >
           <MenuIcon />
         </button>
