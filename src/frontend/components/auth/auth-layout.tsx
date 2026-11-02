@@ -2,7 +2,7 @@ import { Logo } from "../ui/icons";
 
 export function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-wrap bg-white">
+    <div className="flex min-h-screen flex-wrap bg-white max-[839px]:content-start">
       <section
         aria-label="About Nexora"
         className="flex min-w-0 flex-[1_1_420px] flex-col gap-12 overflow-hidden bg-ink px-5 py-4 text-white md:p-16"
