@@ -113,7 +113,7 @@ src/
 **Requirements:** Node.js 20+ and a PostgreSQL database.
 
 ```bash
-git clone https://github.com/wessam-khaled/nexora.git
+git clone https://github.com/mahmoud-ebrahim18725/nexora.git
 cd nexora
 npm install
 
@@ -145,4 +145,4 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ## 👤 Author
 
-Built by [@wessam-khaled](https://github.com/wessam-khaled)
+Built by **Mahmoud Ebrahim** — [GitHub](https://github.com/mahmoud-ebrahim18725) · [LinkedIn](https://www.linkedin.com/in/mahmoud-ebrahim18725)
