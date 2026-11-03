@@ -14,6 +14,16 @@
 
 ---
 
+## 📸 Screenshots
+
+![Dashboard](screenshots/nexora-dashboard.png)
+
+| Sign in / Register | Team management |
+|---|---|
+| ![Login](screenshots/nexora-login.png) | ![Team](screenshots/nexora-team.png) |
+
+---
+
 ## ✨ Features
 
 **Workspaces & team**
