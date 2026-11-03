@@ -16,11 +16,11 @@
 
 ## 📸 Screenshots
 
-![Dashboard](screenshots/nexora-dashboard.png)
+![Dashboard](screenshots/nexora-dashboard.webp)
 
 | Sign in / Register | Team management |
 |---|---|
-| ![Login](screenshots/nexora-login.png) | ![Team](screenshots/nexora-team.png) |
+| ![Login](screenshots/nexora-login.webp) | ![Team](screenshots/nexora-team.webp) |
 
 ---
 
