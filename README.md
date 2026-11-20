@@ -16,11 +16,15 @@
 
 ## 📸 Screenshots
 
-![Dashboard](screenshots/nexora-dashboard.webp)
+![Nexora — dashboard on desktop and mobile](screenshots/nexora-cover.webp)
 
-| Sign in / Register | Team management |
+**Task board** — every project has its own board with To do / In progress / Completed columns, priorities, due dates and assignees.
+
+![Task board](screenshots/nexora-board.webp)
+
+| Team & roles (Owner / Admin / Member) | Sign in / Register |
 |---|---|
-| ![Login](screenshots/nexora-login.webp) | ![Team](screenshots/nexora-team.webp) |
+| ![Team management](screenshots/nexora-team.webp) | ![Login](screenshots/nexora-login.webp) |
 
 ---
 
