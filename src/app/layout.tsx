@@ -13,9 +13,28 @@ const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://nexora-kappa-five-53.vercel.app";
+const siteDescription =
+  "Multi-tenant project management SaaS: isolated workspaces, roles, invitations and task boards.";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: "Nexora",
-  description: "Project management SaaS",
+  description: siteDescription,
+  openGraph: {
+    type: "website",
+    url: siteUrl,
+    siteName: "Nexora",
+    title: "Nexora — Project management for teams",
+    description: siteDescription,
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: "Nexora dashboard" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Nexora — Project management for teams",
+    description: siteDescription,
+    images: ["/og-image.jpg"],
+  },
 };
 
 export const viewport: Viewport = {
