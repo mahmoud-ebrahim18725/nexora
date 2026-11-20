@@ -11,6 +11,7 @@
 ![Prisma](https://img.shields.io/badge/Prisma-7-2D3748?logo=prisma)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white)
+[![CI](https://github.com/mahmoud-ebrahim18725/nexora/actions/workflows/ci.yml/badge.svg)](https://github.com/mahmoud-ebrahim18725/nexora/actions/workflows/ci.yml)
 
 ---
 
@@ -21,6 +22,10 @@
 **Task board** — every project has its own board with To do / In progress / Completed columns, priorities, due dates and assignees.
 
 ![Task board](screenshots/nexora-board.webp)
+
+**Task details** — open any task to edit it, change its status or assignee, and discuss it with your team in the comments.
+
+![Task details and comments](screenshots/nexora-task-details.webp)
 
 | Team & roles (Owner / Admin / Member) | Sign in / Register |
 |---|---|
